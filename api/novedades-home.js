@@ -3,6 +3,12 @@ export default async function handler(req, res) {
     const storeId = process.env.TIENDANUBE_STORE_ID;
     const token = process.env.TIENDANUBE_ACCESS_TOKEN;
 
+    // DEBUG temporal
+    const tokenDebug = token 
+      ? `${token.slice(0, 4)}...${token.slice(-4)} (largo: ${token.length})` 
+      : 'FALTA - no está definida';
+    const storeIdDebug = storeId || 'FALTA - no está definida';
+
     const url = `https://api.tiendanube.com/2025-03/${storeId}/products?sort_by=created-at-descending&per_page=200&visibility=visible&fields=id,name,handle,images,variants`;
 
     const response = await fetch(url, {
@@ -17,9 +23,12 @@ export default async function handler(req, res) {
       return res.status(response.status).json({
         error: 'Error al consultar la API de Tiendanube',
         status: response.status,
-        detail: errorBody
+        detail: errorBody,
+        tokenDebug: tokenDebug,
+        storeIdDebug: storeIdDebug
       });
     }
+
 
     const products = await response.json();
 
