@@ -14,12 +14,11 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      return res.status(response.status).json({ 
+      return res.status(response.status).json({
         error: 'Error al consultar la API de Tiendanube',
         status: response.status,
         detail: errorBody
       });
-    }
     }
 
     const products = await response.json();
@@ -36,10 +35,11 @@ export default async function handler(req, res) {
       };
     });
 
-    // Mezclar el orden (Fisher-Yates)
     for (let i = simplified.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [simplified[i], simplified[j]] = [simplified[j], simplified[i]];
+      const tmp = simplified[i];
+      simplified[i] = simplified[j];
+      simplified[j] = tmp;
     }
 
     res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600');
@@ -47,6 +47,6 @@ export default async function handler(req, res) {
     return res.status(200).json(simplified);
 
   } catch (err) {
-    return res.status(500).json({ error: 'Error interno' });
+    return res.status(500).json({ error: 'Error interno', detail: String(err) });
   }
 }
