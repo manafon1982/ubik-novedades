@@ -13,7 +13,13 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: 'Error al consultar la API de Tiendanube' });
+      const errorBody = await response.text();
+      return res.status(response.status).json({ 
+        error: 'Error al consultar la API de Tiendanube',
+        status: response.status,
+        detail: errorBody
+      });
+    }
     }
 
     const products = await response.json();
