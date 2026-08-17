@@ -12,19 +12,17 @@ export default async function handler(req, res) {
       }
     });
 
-   if (!response.ok) {
+    if (!response.ok) {
       const errorBody = await response.text();
-      return res.status(response.status).json({ 
+      return res.status(response.status).json({
         error: 'Error al consultar la API de Tiendanube',
         status: response.status,
         detail: errorBody
       });
     }
-    }
 
     const products = await response.json();
 
-    // Sin mezclar: ya viene ordenado más nuevo a más viejo desde la API
     const simplified = products.map(function (p) {
       const variant = p.variants && p.variants[0];
       return {
@@ -42,6 +40,6 @@ export default async function handler(req, res) {
     return res.status(200).json(simplified);
 
   } catch (err) {
-    return res.status(500).json({ error: 'Error interno' });
+    return res.status(500).json({ error: 'Error interno', detail: String(err) });
   }
 }
