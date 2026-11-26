@@ -5,6 +5,14 @@ const PER_PAGE = 200;
 // Tope de páginas a consultar para completar TARGET cuando hay productos agotados.
 const MAX_PAGES = 3;
 
+// Las tarjetas muestran la tapa a unos 210 px de ancho. Tiendanube genera
+// versiones reducidas de cada imagen cambiando el sufijo de tamaño: se pide
+// la de 480 px en WebP (unos 25 KB) en lugar de la original de 1024 px (unos 150 KB).
+function smallImage(src) {
+  if (!src) return src;
+  return src.replace(/-\d+-\d+\.(jpe?g|png|webp)(\?.*)?$/i, '-480-0.webp');
+}
+
 export default async function handler(req, res) {
   try {
     const storeId = process.env.TIENDANUBE_STORE_ID;
@@ -54,7 +62,7 @@ export default async function handler(req, res) {
           id: p.id,
           name: p.name.es || Object.values(p.name)[0],
           handle: p.handle.es || Object.values(p.handle)[0],
-          image: p.images && p.images[0] ? p.images[0].src : null,
+          image: p.images && p.images[0] ? smallImage(p.images[0].src) : null,
           price: variant ? variant.price : null,
           promotional_price: variant ? variant.promotional_price : null,
           available: true
